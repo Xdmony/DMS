@@ -14,6 +14,9 @@ from PyQt5 import Qt, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QDialog, \
     QLineEdit
 import pandas as pd
+import pymysql
+import sqlalchemy
+from sqlalchemy import create_engine
 
 import global_var
 import operate.taskController as controller
@@ -44,6 +47,7 @@ class MainWindow(QWidget):
         self.btn_local = QPushButton("从本地导入")  # 文件导入按钮
         self.btn_local.clicked.connect(self.on_btn_local_click)
         self.btn_db = QPushButton("从数据库导入")
+        self.btn_db.clicked.connect(self.on_btn_db_click)
         self.btn_run = QPushButton("运行")
         self.btn_run.clicked.connect(self.task_run)
         self.btn_quit = QPushButton("退出")
@@ -162,7 +166,61 @@ class MainWindow(QWidget):
         从数据库导入文件
         :return:
         """
-        pass
+        self.dbDialog = QDialog()
+        self.dbDialog.resize(600, 350)
+        dbUrl_lable = QLabel('URL:')
+        self.dbUrl = QLineEdit()
+        line_1 = QHBoxLayout()
+        line_1.addWidget(dbUrl_lable, 1)
+        line_1.addWidget(self.dbUrl, 4)
+        dbPort_label = QLabel('Port:')
+        self.dbPort = QLineEdit()
+        line_2 = QHBoxLayout()
+        line_2.addWidget(dbPort_label, 1)
+        line_2.addWidget(self.dbPort, 4)
+        dbName_lable = QLabel("Name:")
+        self.dbName = QLineEdit()
+        line_3 = QHBoxLayout()
+        line_3.addWidget(dbName_lable, 1)
+        line_3.addWidget(self.dbName, 4)
+        dbAccount_lable = QLabel('Account:')
+        self.dbAccount = QLineEdit()
+        line_4 = QHBoxLayout()
+        line_4.addWidget(dbAccount_lable, 1)
+        line_4.addWidget(self.dbAccount, 4)
+        dbPassword_lable = QLabel('Password:')
+        self.dbPassword = QLineEdit()
+        line_5 = QHBoxLayout()
+        line_5.addWidget(dbPassword_lable, 1)
+        line_5.addWidget(self.dbPassword, 4)
+        dbTable_lable = QLabel('Table:')
+        self.dbTable = QLineEdit()
+        dataName_lable = QLineEdit('dataName:')
+        self.dbDataName = QLineEdit()
+        line_6 = QHBoxLayout()
+        line_6.addWidget(dbTable_lable, 1)
+        line_6.addWidget(self.dbTable, 4)
+        line_6.addWidget(dataName_lable, 1)
+        line_6.addWidget(self.dbDataName, 4)
+        btn_ok = QPushButton('OK')
+        btn_ok.clicked.connect(self.db_ok)
+        line_7 = QHBoxLayout()
+        line_7.addStretch()
+        line_7.addWidget(btn_ok)
+        db_layout = QVBoxLayout()
+        db_layout.addLayout(line_1)
+        db_layout.addLayout(line_2)
+        db_layout.addLayout(line_3)
+        db_layout.addLayout(line_4)
+        db_layout.addLayout(line_5)
+        db_layout.addLayout(line_6)
+        db_layout.addLayout(line_7)
+        self.dbDialog.setLayout(db_layout)
+        self.dbDialog.exec_()
+
+    def db_ok(self):
+        engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format('root', '12345678', 'localhost', '3306', 'testdb'))
+        sql_query = 'select * from product;'
 
     def showDataTail(self, dataName):
         """
