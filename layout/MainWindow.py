@@ -219,8 +219,15 @@ class MainWindow(QWidget):
         self.dbDialog.exec_()
 
     def db_ok(self):
-        engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format('root', '12345678', 'localhost', '3306', 'testdb'))
-        sql_query = 'select * from product;'
+        engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(self.dbAccount.text(), self.dbPassword.text(), self.dbUrl.text(), self.dbPort.text(), self.dbDataName.text()))
+        sql_query = 'select * from {};'.format(self.dbTable.text())
+        df = pd.read_sql_query(sql_query, engine)
+        global_var.currentData.data = df
+        global_var.currentData.dataColumns = df.columns.tolist()
+        global_var.currentData.length = len(df)
+        global_var.allDataSet.data_in[self.dbTable.text()] = global_var.currentData
+        global_var.currentData = global_var.DataSet()
+        self.dataList_in.refresh()  # 刷新输入数据
 
     def showDataTail(self, dataName):
         """
